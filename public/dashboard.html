@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h2>Dashboard</h2><a href="admin.html" class="btn btn-warning mb-3">Go to Admin Panel</a>
+    <p id="errorMessage" style="color: red;"></p>
+    <h3>Available Courses</h3>
+    <div id="courses">Loading...</div>
+    <h3>Your Enrolled Courses</h3>
+    <div id="enrolled">Loading...</div>
+  </div>
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = 'login.html';
+    }
+
+    async function fetchWithAuth(url) {
+      try {
+        const res = await fetch(url, {
+          headers: { 'Authorization': Bearer  }
+        });
+        if (!res.ok) {
+          if (res.status === 401) {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+          }
+          throw new Error(HTTP : );
+        }
+        return await res.json();
+      } catch (err) {
+        document.getElementById('errorMessage').textContent = Error loading data: ;
+        console.error(err);
+        return [];
+      }
+    }
+
+    fetchWithAuth('/api/courses').then(data => {
+      document.getElementById('courses').innerHTML = data.length ? data.map(c => 
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5></h5>
+            <p></p>
+            <button class="btn btn-success" onclick="enroll('')">Enroll</button>
+          </div>
+        </div>
+      ).join('') : 'No courses available.';
+    });
+
+    fetchWithAuth('/api/courses/enrolled').then(data => {
+      document.getElementById('enrolled').innerHTML = data.length ? data.map(c => <p></p>).join('') : 'No enrolled courses.';
+    });
+
+    async function enroll(courseId) {
+      try {
+        const res = await fetch(/api/courses/enroll/, {
+          method: 'POST',
+          headers: { 'Authorization': Bearer  }
+        });
+        if (res.ok) {
+          location.reload();
+        } else {
+          document.getElementById('errorMessage').textContent = 'Enrollment failed.';
+        }
+      } catch (err) {
+        document.getElementById('errorMessage').textContent = Enrollment error: ;
+      }
+    }
+  </script>
+</body>
+</html>
+
